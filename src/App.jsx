@@ -126,6 +126,9 @@ function ReservationPage() {
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
   const [adminAuthError, setAdminAuthError] = useState('');
 
+  // Help modal
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
   useEffect(() => {
     if (role === "user" && userName === "") setUserName("홍길동");
     if (role === "admin") setUserName("관리자");
@@ -348,6 +351,23 @@ function ReservationPage() {
             minWidth: 160
           }}
         />
+        <button
+          aria-label="사용 안내"
+          onClick={() => setIsHelpOpen(true)}
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            background: "#fff",
+            color: warmTheme.accent,
+            border: `1.5px solid ${warmTheme.accent}`,
+            fontWeight: 800,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer"
+          }}
+        >i</button>
         {role === "admin" && (
           <span style={{
             color: warmTheme.accent,
@@ -662,6 +682,41 @@ function ReservationPage() {
                   }
                 }}
               >확인</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Help Modal */}
+      {isHelpOpen && (
+        <div style={{
+          position: "fixed",
+          left: 0, top: 0, right: 0, bottom: 0,
+          background: "#6a3b16cc",
+          zIndex: 55,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <div style={{
+            background: "#fff9f1",
+            padding: 24,
+            borderRadius: 16,
+            width: "min(520px, 92vw)",
+            boxShadow: "0 8px 24px #dcac8570"
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={{ fontWeight: 800, fontSize: 18, color: warmTheme.text }}>사용 안내</div>
+              <button onClick={() => setIsHelpOpen(false)} style={{ background: '#fff6e4', border: 'none', borderRadius: 8, padding: '6px 12px', fontWeight: 700, cursor: 'pointer', color: warmTheme.text }}>닫기</button>
+            </div>
+            <div style={{ color: warmTheme.text, lineHeight: 1.6, fontSize: 15 }}>
+              <ul style={{ paddingLeft: 18, margin: 0 }}>
+                <li>이름을 입력한 뒤 달력에서 날짜를 클릭하세요.</li>
+                <li>팝업에서 원하는 시간대를 선택해 예약할 수 있습니다.</li>
+                <li>이미 예약된 시간은 선택할 수 없습니다.</li>
+                <li>하단의 "나의 예약 현황"에서 예약 취소가 가능합니다.</li>
+                <li>관리자 기능은 비밀번호 입력 후 사용 가능합니다.</li>
+              </ul>
             </div>
           </div>
         </div>
