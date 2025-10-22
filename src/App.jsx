@@ -119,6 +119,12 @@ function ReservationPage() {
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [modalDate, setModalDate] = useState(null); // 'YYYY-MM-DD'
   const supabaseEnabled = Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+  const ADMIN_PW = import.meta.env.VITE_ADMIN_PASSWORD || '';
+
+  // Admin auth modal
+  const [isAdminAuthOpen, setIsAdminAuthOpen] = useState(false);
+  const [adminPasswordInput, setAdminPasswordInput] = useState('');
+  const [adminAuthError, setAdminAuthError] = useState('');
 
   useEffect(() => {
     if (role === "user" && userName === "") setUserName("홍길동");
@@ -316,7 +322,12 @@ function ReservationPage() {
             fontSize: 14,
             cursor: "pointer"
           }}
-          onClick={() => setRole("admin")}
+          onClick={() => {
+            if (role === 'admin') return;
+            setAdminPasswordInput('');
+            setAdminAuthError('');
+            setIsAdminAuthOpen(true);
+          }}
         >관리자</button>
       </div>
 
@@ -585,6 +596,72 @@ function ReservationPage() {
                 }}
                 onClick={() => setEditingReservation(null)}
               >닫기</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Auth Modal */}
+      {isAdminAuthOpen && (
+        <div style={{
+          position: "fixed",
+          left: 0, top: 0, right: 0, bottom: 0,
+          background: "#6a3b16cc",
+          zIndex: 60,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <div style={{
+            background: "#fff9f1",
+            padding: 28,
+            borderRadius: 16,
+            minWidth: 320,
+            boxShadow: "0 8px 24px #dcac8570"
+          }}>
+            <div style={{ fontWeight: 800, fontSize: 18, color: warmTheme.text, marginBottom: 12 }}>관리자 비밀번호</div>
+            {!ADMIN_PW && (
+              <div style={{ color: warmTheme.accent, fontSize: 14, marginBottom: 8 }}>
+                환경변수 VITE_ADMIN_PASSWORD가 설정되지 않았습니다.
+              </div>
+            )}
+            <input
+              type="password"
+              value={adminPasswordInput}
+              onChange={(e) => setAdminPasswordInput(e.target.value)}
+              placeholder="비밀번호 입력"
+              style={{
+                padding: 10,
+                border: `1.5px solid ${warmTheme.primary}`,
+                borderRadius: 8,
+                fontSize: 15,
+                background: "#fff",
+                minWidth: 220,
+                marginBottom: 8
+              }}
+            />
+            {adminAuthError && (
+              <div style={{ color: warmTheme.accent, fontSize: 13, marginBottom: 10 }}>{adminAuthError}</div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              <button
+                style={{ background: "#fff6e4", color: warmTheme.text, border: 'none', padding: '7px 14px', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}
+                onClick={() => setIsAdminAuthOpen(false)}
+              >취소</button>
+              <button
+                style={{ background: warmTheme.accent, color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}
+                onClick={() => {
+                  if (!ADMIN_PW) { setAdminAuthError('관리자 비밀번호가 설정되지 않았습니다.'); return; }
+                  if (adminPasswordInput === ADMIN_PW) {
+                    setRole('admin');
+                    setIsAdminAuthOpen(false);
+                    setAdminPasswordInput('');
+                    setAdminAuthError('');
+                  } else {
+                    setAdminAuthError('비밀번호가 올바르지 않습니다.');
+                  }
+                }}
+              >확인</button>
             </div>
           </div>
         </div>
